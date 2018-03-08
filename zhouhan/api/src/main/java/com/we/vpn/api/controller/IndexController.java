@@ -4,6 +4,7 @@ import com.jfinal.kit.JsonKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.we.vpn.api.core.RestController;
+import java.util.*;
 
 /**
  * Created by swn on 2017-04-06.
@@ -26,6 +27,12 @@ public class IndexController extends RestController {
         renderJson(JsonKit.toJson(user));
 }
 
+    public void findhotelbyname(){
+        String id = getPara(0);
+        Record user = Db.findFirst("select * from hotel_info where name=?",id);
+        renderJson(JsonKit.toJson(user));
+    }
+
     public void updatehotelnum(){
         int id = getParaToInt(0);
         String num = getPara(1);
@@ -46,8 +53,8 @@ public class IndexController extends RestController {
 
     public void findroombyhotel(){
         int id = getParaToInt(0);
-        Record room = Db.findFirst("select * from room_info where from_hotel=?",id);
-        renderJson(JsonKit.toJson(room));
+        List<Record> data = Db.find("select * from room_info where from_hotel=?",id);
+        renderJson(JsonKit.toJson(data));
     }
 
     public void findroombynum(){
@@ -58,14 +65,14 @@ public class IndexController extends RestController {
 
     public void findtipsbynum(){
         int id = getParaToInt(0);
-        Record tips = Db.findFirst("select * from room_info where tips_num=?",id);
+        Record tips = Db.findFirst("select * from tips_info where tips_num=?",id);
         renderJson(JsonKit.toJson(tips));
     }
 
     public void findtipsbypeople(){
         int id = getParaToInt(0);
-        Record tips = Db.findFirst("select * from room_info where tips_people=?",id);
-        renderJson(JsonKit.toJson(tips));
+        List<Record> data = Db.find("select * from tips_info where tips_people=?",id);
+        renderJson(JsonKit.toJson(data));
     }
 
     public void findtipsbyhotel(){
@@ -102,5 +109,6 @@ public class IndexController extends RestController {
         Db.save("tips_info",user);
         renderText("OK");
     }
+
 
 }
