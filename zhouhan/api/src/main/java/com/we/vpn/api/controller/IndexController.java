@@ -97,6 +97,31 @@ public class IndexController extends RestController {
         renderText("OK");
     }
 
+    public void rate(){
+        int num = getParaToInt(0);
+        int star = getParaToInt(1);
+        int hotel = getParaToInt(2);
+        Db.update("update tips_info set tips_star = ? where tips_num=?",star, num);
+        if(star==1){
+            Db.update("update hotel_info set hotel_star_1 = hotel_star_1 + 1 where num=?", hotel);
+        }
+        if(star==2){
+            Db.update("update hotel_info set hotel_star_2 = hotel_star_2 + 1 where num=?", hotel);
+        }
+        if(star==3){
+            Db.update("update hotel_info set hotel_star_3 = hotel_star_3 + 1 where num=?", hotel);
+        }
+        if(star==4){
+            Db.update("update hotel_info set hotel_star_4 = hotel_star_4 + 1 where num=?", hotel);
+        }
+        if(star==5){
+            Db.update("update hotel_info set hotel_star_5 = hotel_star_5 + 1 where num=?", hotel);
+        }
+        //Record user = new Record().set("people_name",name).set("people_password",password).set("people_phone",phone).set("people_level",level);
+        //Db.save("people_info",user);
+        renderText("OK");
+    }
+
     public void addtips(){
         int num = getParaToInt(0);
         String  time_start = getPara(1);
