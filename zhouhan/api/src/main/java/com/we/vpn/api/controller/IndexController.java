@@ -123,17 +123,39 @@ public class IndexController extends RestController {
     }
 
     public void addtips(){
-        int num = getParaToInt(0);
-        String  time_start = getPara(1);
-        String  time_end = getPara(2);
-        int room_num = getParaToInt(3);
-        int hotel_num = getParaToInt(4);
-        int people_num = getParaToInt(5);
-        int star = getParaToInt(6);
-        Record user = new Record().set("tips_num",num).set("tips_time_start",time_start).set("tips_time_stop",time_end).set("tips_room",room_num).set("tips_hotel",hotel_num).set("tips_people",people_num).set("tips_star",star);
+        String  time_start = getPara(0);
+        String  time_end = getPara(1);
+        int room_num = getParaToInt(2);
+        int hotel_num = getParaToInt(3);
+        int people_num = getParaToInt(4);
+        Record user = new Record().set("tips_time_start",time_start).set("tips_time_stop",time_end).set("tips_room",room_num).set("tips_hotel",hotel_num).set("tips_people",people_num);
         Db.save("tips_info",user);
         renderText("OK");
     }
 
+    public void addhotel(){
+        String  hotel_name = getPara(0);
+        String  hotel_information = getPara(1);
+        int hotel_room_num = getParaToInt(2);
+        String hotel_address = getPara(3);
+        String hotel_phone = getPara(4);
+        Record user = new Record().set("name",hotel_name).set("hotel_information",hotel_information).set("hotel_room_num",hotel_room_num).set("hotel_adress",hotel_address).set("hotel_phone",hotel_phone);
+        Db.save("hotel_info",user);
+        Db.update("update hotel_num set hotel_num_num = hotel_num_num + 1");
+        renderText("OK");
+    }
+
+    public void changepsd(){
+        String id = getPara(0);
+        String psd = getPara(1);
+        Db.update("update people_info set people_password = ? where people_name=?", psd, id);
+        renderText("OK");
+    }
+
+    public void deletehotel(){
+        String name = getPara(0);
+        Db.update("delete from hotel_info where name = ?",name);
+        renderText("OK");
+    }
 
 }
