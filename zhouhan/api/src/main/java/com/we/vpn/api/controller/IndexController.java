@@ -52,7 +52,7 @@ public class IndexController extends RestController {
     }
 
     public void findroombyhotel(){
-        int id = getParaToInt(0);
+        String id = getPara(0);
         List<Record> data = Db.find("select * from room_info where from_hotel=?",id);
         renderJson(JsonKit.toJson(data));
     }
@@ -77,7 +77,12 @@ public class IndexController extends RestController {
 
     public void findtipsbyhotel(){
         int id = getParaToInt(0);
-        Record tips = Db.findFirst("select * from room_info where tips_hotel=?",id);
+        List<Record> tips = Db.find("select * from tips_info where tips_hotel=?",id);
+        renderJson(JsonKit.toJson(tips));
+    }
+
+    public void findtips(){
+        List<Record> tips = Db.find("select * from tips_info");
         renderJson(JsonKit.toJson(tips));
     }
 
@@ -101,7 +106,9 @@ public class IndexController extends RestController {
         int num = getParaToInt(0);
         int star = getParaToInt(1);
         int hotel = getParaToInt(2);
+        String info = getPara(3);
         Db.update("update tips_info set tips_star = ? where tips_num=?",star, num);
+        Db.update("update tips_info set tips_text = ? where tips_num = ?",info,num);
         if(star==1){
             Db.update("update hotel_info set hotel_star_1 = hotel_star_1 + 1 where num=?", hotel);
         }
@@ -136,10 +143,9 @@ public class IndexController extends RestController {
     public void addhotel(){
         String  hotel_name = getPara(0);
         String  hotel_information = getPara(1);
-        int hotel_room_num = getParaToInt(2);
-        String hotel_address = getPara(3);
-        String hotel_phone = getPara(4);
-        Record user = new Record().set("name",hotel_name).set("hotel_information",hotel_information).set("hotel_room_num",hotel_room_num).set("hotel_adress",hotel_address).set("hotel_phone",hotel_phone);
+        String hotel_address = getPara(2);
+        String hotel_phone = getPara(3);
+        Record user = new Record().set("name",hotel_name).set("hotel_information",hotel_information).set("hotel_adress",hotel_address).set("hotel_phone",hotel_phone);
         Db.save("hotel_info",user);
         Db.update("update hotel_num set hotel_num_num = hotel_num_num + 1");
         renderText("OK");
@@ -156,6 +162,70 @@ public class IndexController extends RestController {
         String name = getPara(0);
         Db.update("delete from hotel_info where name = ?",name);
         renderText("OK");
+    }
+
+    public void deleterate(){
+        int name = getParaToInt(0);
+        String hotel = getPara(1);
+        int star = getParaToInt(2);
+        Db.update("update tips_info set tips_star = 0 where tips_num=?",name);
+        Db.update("update tips_info set tips_text = null where tips_num=?",name);
+        if(star==1){
+            Db.update("update hotel_info set hotel_star_1 = hotel_star_1 - 1 where num=?", hotel);
+        }
+        if(star==2){
+            Db.update("update hotel_info set hotel_star_2 = hotel_star_2 - 1 where num=?", hotel);
+        }
+        if(star==3){
+            Db.update("update hotel_info set hotel_star_3 = hotel_star_3 - 1 where num=?", hotel);
+        }
+        if(star==4){
+            Db.update("update hotel_info set hotel_star_4 = hotel_star_4 - 1 where num=?", hotel);
+        }
+        if(star==5){
+            Db.update("update hotel_info set hotel_star_5 = hotel_star_5 - 1 where num=?", hotel);
+        }
+        renderText("OK");
+    }
+
+    public void addroom(){
+        String  room_name = getPara(0);
+        int room_level = getParaToInt(1);
+        String info = getPara(2);
+        String name = getPara(3);
+        Record user = new Record().set("room_name",room_name).set("hotel_level",room_level).set("room_information",info).set("from_hotel",name);
+        Db.save("room_info",user);
+        Db.update("update hotel_info set hotel_room_num = hotel_room_num + 1 where name = ?",name);
+        renderText("OK");
+    }
+
+    public void deletepeople(){
+        String name = getPara(0);
+        Db.update("delete from people_info where people_name = ?",name);
+        renderText("OK");
+    }
+
+    public void gethotel(){
+        int min = getParaToInt(0);
+        int max = getParaToInt(1);
+        String sheng = getPara(2);
+        String city = getPara(3);
+        int star = getParaToInt(4);
+        int leixing = getParaToInt(5);
+        //List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ?",star);
+        List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ? and hotel_min >= ? and  hotel_max <= ? and hotel_sheng = ? and hotel_city = ? and hotel_leixing in (?,3)",star,min,max,sheng,city,leixing);
+        renderJson(JsonKit.toJson(tips));
+    }
+
+    public void gethotel2(){
+        int min = getParaToInt(0);
+        int max = getParaToInt(1);
+        String sheng = getPara(2);
+        String city = getPara(3);
+        int leixing = getParaToInt(4);
+        //List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ?",star);
+        List<Record> tips = Db.find("select * from hotel_info where hotel_min >= ? and  hotel_max <= ? and hotel_sheng = ? and hotel_city = ? and hotel_leixing in (?,3)",min,max,sheng,city,leixing);
+        renderJson(JsonKit.toJson(tips));
     }
 
 }
