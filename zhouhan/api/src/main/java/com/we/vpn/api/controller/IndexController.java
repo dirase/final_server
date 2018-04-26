@@ -107,8 +107,14 @@ public class IndexController extends RestController {
         int star = getParaToInt(1);
         int hotel = getParaToInt(2);
         String info = getPara(3);
+        int year = getParaToInt(4);
+        int month = getParaToInt(5);
+        int day = getParaToInt(6);
         Db.update("update tips_info set tips_star = ? where tips_num=?",star, num);
         Db.update("update tips_info set tips_text = ? where tips_num = ?",info,num);
+        Db.update("update tips_info set rateyear = ? where tips_num = ?",year,num);
+        Db.update("update tips_info set ratemonth = ? where tips_num = ?",month,num);
+        Db.update("update tips_info set rateday = ? where tips_num = ?",day,num);
         if(star==1){
             Db.update("update hotel_info set hotel_star_1 = hotel_star_1 + 1 where num=?", hotel);
         }
@@ -128,14 +134,40 @@ public class IndexController extends RestController {
         //Db.save("people_info",user);
         renderText("OK");
     }
+    public void cancel(){
+        int tips_num = getParaToInt(0);
+        int num = 2;
+        Db.update("update tips_info set tips_now = ? where tips_num=?",num,tips_num);
+        renderText("OK");
+    }
 
     public void addtips(){
         String  time_start = getPara(0);
         String  time_end = getPara(1);
-        int room_num = getParaToInt(2);
-        int hotel_num = getParaToInt(3);
-        int people_num = getParaToInt(4);
-        Record user = new Record().set("tips_time_start",time_start).set("tips_time_stop",time_end).set("tips_room",room_num).set("tips_hotel",hotel_num).set("tips_people",people_num);
+        int hotel_num = getParaToInt(2);
+        int people_num = getParaToInt(3);
+        int tips_phone = getParaToInt(4);
+        int year = getParaToInt(5);
+        int month = getParaToInt(6);
+        int day = getParaToInt(7);
+        int hour = getParaToInt(8);
+        int minutes = getParaToInt(9);
+        String personname = getPara(10);
+        String info = getPara(11);
+        Record user = new Record();
+        user.set("tips_time_start",time_start);
+        user.set("tips_time_stop",time_end);
+        user.set("tips_hotel",hotel_num);
+        user.set("tips_people",people_num);
+        user.set("tips_phone",tips_phone);
+        user.set("tips_rateyear",year);
+        user.set("tips_ratemonth",month);
+        user.set("tips_rateday",day);
+        user.set("tips_ratehour",hour);
+        user.set("tips_rateminutes",minutes);
+        user.set("tips_personname",personname);
+        user.set("tips_yaoqiu",info);
+        //Record user = new Record().set("tips_time_start",time_start).set("tips_time_stop",time_end).set("tips_hotel",hotel_num).set("tips_people",people_num).set("tips_phone",tips_phone).set("tips_rateyear",year).set("tips_ratemonth",month).set("tips_rateday",day).set("tips_ratehour",hour).set("tips_rateminutes",minutes);
         Db.save("tips_info",user);
         renderText("OK");
     }
