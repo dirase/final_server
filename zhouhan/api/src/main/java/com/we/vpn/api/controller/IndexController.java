@@ -4,7 +4,11 @@ import com.jfinal.kit.JsonKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.we.vpn.api.core.RestController;
+
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * Created by swn on 2017-04-06.
@@ -154,6 +158,7 @@ public class IndexController extends RestController {
         int minutes = getParaToInt(9);
         String personname = getPara(10);
         String info = getPara(11);
+        String room_name = getPara(12);
         Record user = new Record();
         user.set("tips_time_start",time_start);
         user.set("tips_time_stop",time_end);
@@ -167,6 +172,7 @@ public class IndexController extends RestController {
         user.set("tips_rateminutes",minutes);
         user.set("tips_personname",personname);
         user.set("tips_yaoqiu",info);
+        user.set("tips_room",room_name);
         //Record user = new Record().set("tips_time_start",time_start).set("tips_time_stop",time_end).set("tips_hotel",hotel_num).set("tips_people",people_num).set("tips_phone",tips_phone).set("tips_rateyear",year).set("tips_ratemonth",month).set("tips_rateday",day).set("tips_ratehour",hour).set("tips_rateminutes",minutes);
         Db.save("tips_info",user);
         renderText("OK");
@@ -240,23 +246,47 @@ public class IndexController extends RestController {
     public void gethotel(){
         int min = getParaToInt(0);
         int max = getParaToInt(1);
-        String sheng = getPara(2);
-        String city = getPara(3);
+        String sheng =null;
+        String city =null;
         int star = getParaToInt(4);
         int leixing = getParaToInt(5);
+        String view = null;
+        try {
+            sheng = URLDecoder.decode(getPara(2),"UTF-8");
+            city = URLDecoder.decode(getPara(3),"UTF-8");
+            view = URLDecoder.decode(getPara(6),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            view = "%";
+            city= "%";
+            sheng= "%";
+            e.printStackTrace();
+        }
+        //String view = getPara(6);
         //List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ?",star);
-        List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ? and hotel_min >= ? and  hotel_max <= ? and hotel_sheng = ? and hotel_city = ? and hotel_leixing in (?,3)",star,min,max,sheng,city,leixing);
+        List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ? and hotel_min >= ? and  hotel_max <= ? and hotel_sheng LIKE ? and hotel_city LIKE ? and hotel_leixing in (?,3) and hotel_view LIKE ?",star,min,max,"%"+sheng+"%","%"+city+"%",leixing,"%"+view+"%");
         renderJson(JsonKit.toJson(tips));
     }
 
     public void gethotel2(){
         int min = getParaToInt(0);
         int max = getParaToInt(1);
-        String sheng = getPara(2);
-        String city = getPara(3);
+        String sheng =null;
+        String city= null ;
         int leixing = getParaToInt(4);
+        //String view = getPara(5);
+        String view = null;
+        try {
+            sheng = URLDecoder.decode(getPara(2),"UTF-8");
+            city = URLDecoder.decode(getPara(3),"UTF-8");
+            view = URLDecoder.decode(getPara(5),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            view = "%";
+            city= "%";
+            sheng= "%";
+            e.printStackTrace();
+        }
         //List<Record> tips = Db.find("select * from hotel_info where hotel_stars = ?",star);
-        List<Record> tips = Db.find("select * from hotel_info where hotel_min >= ? and  hotel_max <= ? and hotel_sheng = ? and hotel_city = ? and hotel_leixing in (?,3)",min,max,sheng,city,leixing);
+        List<Record> tips = Db.find("select * from hotel_info where hotel_min >= ? and  hotel_max <= ? and hotel_sheng LIKE ? and hotel_city LIKE ? and hotel_leixing in (?,3) and hotel_view LIKE ? ",min,max,"%"+sheng+"%","%"+city+"%",leixing,"%"+view+"%");
         renderJson(JsonKit.toJson(tips));
     }
 
