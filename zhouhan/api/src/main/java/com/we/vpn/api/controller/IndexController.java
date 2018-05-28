@@ -56,8 +56,14 @@ public class IndexController extends RestController {
     }
 
     public void findroombyhotel(){
-        String id = getPara(0);
-        List<Record> data = Db.find("select * from room_info where from_hotel=?",id);
+        String id = null;
+        try {
+            id = URLDecoder.decode(getPara(0),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            id = "%";
+            e.printStackTrace();
+        }
+        List<Record> data = Db.find("select * from room_info where from_hotel LIKE ? ","%"+id+"%");
         renderJson(JsonKit.toJson(data));
     }
 
@@ -105,6 +111,14 @@ public class IndexController extends RestController {
         Db.save("people_info",user);
         renderText("OK");
     }
+    public void updateperson(){
+        String name = getPara(0);
+        long phone = getParaToLong(1);
+        int num = getParaToInt(2);
+        Db.update("update people_info set people_name = ? and people_phone = ? where people_num=?",name,phone, num);
+        renderText("OK");
+    }
+
 
     public void rate(){
         int num = getParaToInt(0);
@@ -179,11 +193,27 @@ public class IndexController extends RestController {
     }
 
     public void addhotel(){
-        String  hotel_name = getPara(0);
-        String  hotel_information = getPara(1);
-        String hotel_address = getPara(2);
+        String  hotel_name = null;
+        String  hotel_information = null;
+        String hotel_address = null;
+        String sheng = null;
+        String city = null;
+        String view = null;
+        String jing = getPara(7);
+        String wei = getPara(8);
+        try {
+            hotel_name = URLDecoder.decode(getPara(0),"UTF-8");
+            hotel_information = URLDecoder.decode(getPara(1),"UTF-8");
+            hotel_address = URLDecoder.decode(getPara(2),"UTF-8");
+            sheng = URLDecoder.decode(getPara(4),"UTF-8");
+            city = URLDecoder.decode(getPara(5),"UTF-8");
+            view = URLDecoder.decode(getPara(6),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String hotel_phone = getPara(3);
-        Record user = new Record().set("name",hotel_name).set("hotel_information",hotel_information).set("hotel_adress",hotel_address).set("hotel_phone",hotel_phone);
+        int  star = getParaToInt(7);
+        Record user = new Record().set("name",hotel_name).set("hotel_information",hotel_information).set("hotel_adress",hotel_address).set("hotel_phone",hotel_phone).set("hotel_sheng",sheng).set("hotel_city",city).set("hotel_view",view).set("hotel_jing",jing).set("hotel_wei",wei);
         Db.save("hotel_info",user);
         Db.update("update hotel_num set hotel_num_num = hotel_num_num + 1");
         renderText("OK");
@@ -227,11 +257,32 @@ public class IndexController extends RestController {
     }
 
     public void addroom(){
-        String  room_name = getPara(0);
+        String  room_name = null;
+        try {
+            room_name = URLDecoder.decode(getPara(0),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         int room_level = getParaToInt(1);
-        String info = getPara(2);
-        String name = getPara(3);
-        Record user = new Record().set("room_name",room_name).set("hotel_level",room_level).set("room_information",info).set("from_hotel",name);
+        String info = null;
+        try {
+            info = URLDecoder.decode(getPara(2),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String name = null;
+        try {
+            name = URLDecoder.decode(getPara(3),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String things = null;
+        try {
+            things = URLDecoder.decode(getPara(4),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Record user = new Record().set("room_name",room_name).set("hotel_level",room_level).set("room_information",info).set("from_hotel",name).set("room_things",things);
         Db.save("room_info",user);
         Db.update("update hotel_info set hotel_room_num = hotel_room_num + 1 where name = ?",name);
         renderText("OK");
