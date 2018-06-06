@@ -32,7 +32,12 @@ public class IndexController extends RestController {
 }
 
     public void findhotelbyname(){
-        String id = getPara(0);
+        String id = null;
+        try {
+            id = URLDecoder.decode(getPara(0),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         Record user = Db.findFirst("select * from hotel_info where name=?",id);
         renderJson(JsonKit.toJson(user));
     }
@@ -112,10 +117,15 @@ public class IndexController extends RestController {
         renderText("OK");
     }
     public void updateperson(){
-        String name = getPara(0);
-        long phone = getParaToLong(1);
+        String name = null;
+        try {
+            name = URLDecoder.decode(getPara(0),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String phone = getPara(1);
         int num = getParaToInt(2);
-        Db.update("update people_info set people_name = ? and people_phone = ? where people_num=?",name,phone, num);
+        Db.update("update people_info set people_name = ?, people_phone = ? where people_num=?",name,phone, num);
         renderText("OK");
     }
 
@@ -170,9 +180,31 @@ public class IndexController extends RestController {
         int day = getParaToInt(7);
         int hour = getParaToInt(8);
         int minutes = getParaToInt(9);
-        String personname = getPara(10);
-        String info = getPara(11);
-        String room_name = getPara(12);
+        String hotelname = null;
+        String personname = null;
+        try {
+            personname = URLDecoder.decode(getPara(10),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String info = null;
+        try {
+            info = URLDecoder.decode(getPara(11),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String room_name = null;
+        try {
+            room_name = URLDecoder.decode(getPara(12),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            hotelname = URLDecoder.decode(getPara(13),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        int room_num = getParaToInt(14);
         Record user = new Record();
         user.set("tips_time_start",time_start);
         user.set("tips_time_stop",time_end);
@@ -187,8 +219,10 @@ public class IndexController extends RestController {
         user.set("tips_personname",personname);
         user.set("tips_yaoqiu",info);
         user.set("tips_room",room_name);
+        user.set("tips_hotelname",hotelname);
         //Record user = new Record().set("tips_time_start",time_start).set("tips_time_stop",time_end).set("tips_hotel",hotel_num).set("tips_people",people_num).set("tips_phone",tips_phone).set("tips_rateyear",year).set("tips_ratemonth",month).set("tips_rateday",day).set("tips_ratehour",hour).set("tips_rateminutes",minutes);
         Db.save("tips_info",user);
+        Db.update("update room_info set room_used = room_used - 1 where room_num=?",room_num);
         renderText("OK");
     }
 
